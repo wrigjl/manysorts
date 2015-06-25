@@ -89,10 +89,28 @@ def do_shell(q, a):
                     q.put(copy.deepcopy(a))
 
 def gen_gaps(alen):
+    '''Generate gaps based on Sedgewick 1986 (O(N**4/3))
+       1, 8, 23, 77, 281, ...
+    '''
     k = 1
     gaps = [1]
     while gaps[-1] < alen:
         gaps.append(4 ** k + 3 * (2 ** (k - 1)) + 1)
+        k = k + 1
+    gaps.reverse()
+    return gaps
+
+def gen_gaps(alen):
+    '''Generate gaps based on Hibbard, 1963 (O(N**3/2)).
+       1, 3, 7, 15, 31, 63, ...
+    '''
+    k = 1
+    gaps = []
+    while True:
+        n = (1 << k) - 1
+        if n >= alen:
+            break
+        gaps.append(n)
         k = k + 1
     gaps.reverse()
     return gaps
