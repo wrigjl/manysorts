@@ -75,8 +75,7 @@ for target in (sort_thread,):
     threads.append(t)
 
 def do_bubble(q, a):
-    N = len(a) - 1
-    for j in range(N, -1, -1):
+    for j in range(len(a) - 1, -1, -1):
         swapped = False
         for i in range(0, j):
             if a[i] <= a[i + 1]:
@@ -85,7 +84,7 @@ def do_bubble(q, a):
             q.put(copy.deepcopy(a))
             swapped = True
         if not swapped:
-            q.put(None)
+            return
 
 [t.start() for t in threads]
 
