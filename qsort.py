@@ -26,56 +26,16 @@
 
 # implementation of visualized quick sort
 
-import matplotlib
-matplotlib.use('TKAgg')
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import pprint
-import threading
-import Queue
+import argparse
+import harness
 import copy
-import random
 
-resQueue = Queue.Queue(10)
-theArray = range(1000)
-random.shuffle(theArray)
-
-fig = plt.figure()
-ax = plt.axes(xlim=(0, len(theArray)), ylim=(0, len(theArray)))
-line, = ax.plot([], [], 'ro')
-
-def init():
-    line.set_data([], [])
-    return line,
-
-def update(num, aargs):
-    if aargs['done']:
-        return line,
-    q = aargs['queue']
-    a = q.get()
-    if a is None:
-        aargs['done'] = True
-        return line,
-    line.set_data(range(0, len(a)), a)
-    q.task_done()
-    return line,
-
-aargs = {
-    'queue': resQueue,
-    'done': False
-}
+def do_qsort(q, a, lo=None, hi=None):
+    if lo is None:
+        lo = 0
+    if hi is None:
+        hi = len(a) - 1
         
-def sort_thread():
-    do_qsort(resQueue, theArray, 0, len(theArray)-1)
-    resQueue.put(None)
-
-threads = []
-for target in (sort_thread,):
-    t = threading.Thread(target=target)
-    t.daemon = True
-    threads.append(t)
-
-def do_qsort(q, a, lo, hi):
     if lo < hi:
         p = partition(q, a, lo, hi)
         do_qsort(q, a, lo, p - 1)
@@ -99,8 +59,9 @@ def partition(q, a, lo, hi):
     q.put(copy.deepcopy(a))
     return storeIndex
 
-[t.start() for t in threads]
-
-ani = animation.FuncAnimation(fig, update, blit=True, init_func=init,
-                              fargs=(aargs,), interval=10)
-plt.show()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--len', type=int, help="length of array",
+                        required=False, default=100)
+    args = parser.parse_args()
+    harness.SortHarness(do_qsort, args.len).go()

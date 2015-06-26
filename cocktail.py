@@ -26,53 +26,9 @@
 
 # implementation of visualized cocktail sort
 
-import matplotlib
-matplotlib.use('TKAgg')
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import threading
-import Queue
+import argparse
+import harness
 import copy
-import random
-
-resQueue = Queue.Queue(10)
-theArray = range(100)
-random.shuffle(theArray)
-
-fig = plt.figure()
-ax = plt.axes(xlim=(0, len(theArray)), ylim=(0, len(theArray)))
-line, = ax.plot([], [], 'ro')
-
-def init():
-    line.set_data([], [])
-    return line,
-
-def update(num, aargs):
-    if aargs['done']:
-        return
-    q = aargs['queue']
-    a = q.get()
-    if a is None:
-        aargs['done'] = True
-        return
-    line.set_data(range(0, len(a)), a)
-    q.task_done()
-    return line,
-
-aargs = {
-    'queue': resQueue,
-    'done': False
-}
-        
-def sort_thread():
-    do_cocktail(resQueue, theArray)
-    resQueue.put(None)
-
-threads = []
-for target in (sort_thread,):
-    t = threading.Thread(target=target)
-    t.daemon = True
-    threads.append(t)
 
 def do_cocktail(q, a):
     l = 0
@@ -91,6 +47,7 @@ def do_cocktail(q, a):
         if not swapped:
             break
 
+        # Go right to left...
         for i in xrange(r - 1, l - 1, -1):
             if a[i] > a[i + 1]:
                 swapped = True
@@ -100,8 +57,9 @@ def do_cocktail(q, a):
         if not swapped:
             break
 
-[t.start() for t in threads]
-
-ani = animation.FuncAnimation(fig, update, fargs=(aargs,), init_func=init,
-                              blit=True, interval=10)
-plt.show()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--len', type=int, help="length of array",
+                        required=False, default=100)
+    args = parser.parse_args()
+    harness.SortHarness(do_cocktail, args.len).go()
