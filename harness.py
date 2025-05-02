@@ -31,14 +31,14 @@ matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import threading
-import Queue
+import queue
 import copy
 import random
 
 class SortHarness:
     def __init__(self, sortfun, N):
         self.sortfun = sortfun
-        self.theArray = range(N)
+        self.theArray = list(range(N))
         random.shuffle(self.theArray)
         self.fig = plt.figure()
         self.ax = plt.axes(xlim=(0, len(self.theArray)),

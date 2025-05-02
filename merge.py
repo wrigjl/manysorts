@@ -32,12 +32,12 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pprint
 import threading
-import Queue
+import queue
 import copy
 import random
 
-resQueue = Queue.Queue(10)
-theArray = range(1000)
+resQueue = queue.Queue(10)
+theArray = list(range(1000))
 random.shuffle(theArray)
 
 #theArray = [54, 26, 93, 17, 77, 31, 44, 55, 20]
